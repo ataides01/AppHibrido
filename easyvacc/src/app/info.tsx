@@ -1,47 +1,52 @@
-import { View, StyleSheet, Text } from "react-native";
-import Header from "@/components/Header";
+import { StyleSheet, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function Info() {
+import Header from "@/components/Header";
+import Card from "@/components/Card";
+import { ThemedText } from "@/components/themed-text";
+
+export default function InfoScreen() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
 
       <Header title="Informações do Sistema" />
 
-      <Text style={styles.text}>
-        EasyVacc é um aplicativo híbrido desenvolvido para controle de vacinação.
-      </Text>
+      <ScrollView>
 
-      <Text style={styles.text}>
-        Tecnologias utilizadas:
-      </Text>
+        <Card
+          title="EasyVacc"
+          subtitle="Sistema de Vacinação"
+          description="Aplicativo híbrido desenvolvido para controle de vacinas e profissionais."
+        />
 
-      <Text style={styles.text}>
-        React Native
-      </Text>
+        <Card
+          title="Versão"
+          subtitle="1.0"
+          description="Projeto acadêmico"
+        />
 
-      <Text style={styles.text}>
-        Expo
-      </Text>
+        <Card
+          title="Tecnologias"
+          subtitle="React Native + Expo"
+          description="Sistema multiplataforma"
+        />
 
-      <Text style={styles.text}>
-        JavaScript e TypeScript
-      </Text>
+        <Card
+          title="Objetivo"
+          subtitle="Gestão de saúde"
+          description="Facilitar controle de vacinação"
+        />
 
-      <Text style={styles.text}>
-        Projeto acadêmico.
-      </Text>
+      </ScrollView>
 
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20
-  },
-  text: {
-    fontSize: 16,
-    marginVertical: 5
+    padding: 20,
+    backgroundColor: "#f4f6f8"
   }
 });

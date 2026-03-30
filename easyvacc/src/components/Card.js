@@ -15,9 +15,9 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     padding: 15,
-    marginVertical: 8,
     borderRadius: 10,
-    elevation: 3
+    elevation: 3,
+    marginTop: 10
   },
   title: {
     fontSize: 18,

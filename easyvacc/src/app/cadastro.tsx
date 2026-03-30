@@ -1,56 +1,85 @@
-import { View, TextInput, StyleSheet, Alert } from "react-native";
+import { StyleSheet, View, TextInput, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import Header from "@/components/Header";
 import Button from "@/components/Button";
-import { useState } from "react";
+import Card from "@/components/Card";
+import { ThemedText } from "@/components/themed-text";
 
-export default function Cadastro() {
-
-  const [nome, setNome] = useState("");
-  const [cargo, setCargo] = useState("");
-
-  function cadastrar() {
-    Alert.alert("Funcionário cadastrado", nome + " - " + cargo);
-    setNome("");
-    setCargo("");
-  }
-
+export default function CadastroScreen() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
 
       <Header title="Cadastro de Funcionários" />
 
-      <TextInput
-        placeholder="Nome do funcionário"
-        style={styles.input}
-        value={nome}
-        onChangeText={setNome}
-      />
+      <ThemedText type="title" style={styles.title}>
+        Cadastrar Profissional
+      </ThemedText>
 
-      <TextInput
-        placeholder="Cargo"
-        style={styles.input}
-        value={cargo}
-        onChangeText={setCargo}
-      />
+      <ScrollView>
 
-      <Button
-        title="Cadastrar"
-        onPress={cadastrar}
-      />
+        <TextInput
+          placeholder="Nome do Funcionário"
+          style={styles.input}
+        />
 
-    </View>
+        <TextInput
+          placeholder="Cargo"
+          style={styles.input}
+        />
+
+        <TextInput
+          placeholder="CPF"
+          style={styles.input}
+        />
+
+        <TextInput
+          placeholder="Telefone"
+          style={styles.input}
+        />
+
+        <Button title="Salvar Funcionário" onPress={() => {}} />
+
+        <ThemedText style={styles.subtitle}>
+          Funcionários cadastrados
+        </ThemedText>
+
+        <Card
+          title="João Silva"
+          subtitle="Enfermeiro"
+          description="CPF: 000.000.000-00"
+        />
+
+        <Card
+          title="Maria Souza"
+          subtitle="Técnica de Enfermagem"
+          description="CPF: 111.111.111-11"
+        />
+
+      </ScrollView>
+
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20
+    padding: 20,
+    backgroundColor: "#f4f6f8"
+  },
+  title: {
+    textAlign: "center",
+    marginBottom: 10
+  },
+  subtitle: {
+    marginTop: 20,
+    marginBottom: 10
   },
   input: {
-    borderWidth: 1,
-    padding: 10,
-    marginVertical: 10,
-    borderRadius: 8
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 10
   }
 });

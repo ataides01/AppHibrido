@@ -1,57 +1,71 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 
-import Button from "@/components/Button";
 import Header from "@/components/Header";
+import Button from "@/components/Button";
 import Card from "@/components/Card";
-import { ThemedView } from "@/components/themed-view";
 import { ThemedText } from "@/components/themed-text";
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView>
+    <SafeAreaView style={styles.container}>
 
-        <Header title="EasyVacc" />
+      <Header title="EasyVacc" />
 
-        <ThemedText type="title" style={styles.title}>
-          Sistema de Gestão de Vacinação
-        </ThemedText>
+      <ThemedText type="title" style={styles.title}>
+        Sistema de Gestão de Vacinação
+      </ThemedText>
 
-        <Card
-          title="Bem-vindo"
-          subtitle="Aplicativo Híbrido"
-          description="Controle de vacinas, cadastro de funcionários e monitoramento do sistema."
-        />
+      <ThemedText style={styles.subtitle}>
+        Controle de vacinas, funcionários e informações do sistema.
+      </ThemedText>
+
+      <Card
+        title="Painel do Sistema"
+        subtitle="Aplicativo Híbrido"
+        description="Gerencie vacinas, cadastre profissionais da saúde e acompanhe o funcionamento do sistema EasyVacc."
+      />
+
+      <View style={styles.buttons}>
 
         <Button
-          title="Vacinas"
+          title="💉 Vacinas"
           onPress={() => router.push("/vacinas")}
         />
 
         <Button
-          title="Cadastrar Funcionários"
+          title="👨‍⚕️ Cadastrar Funcionários"
           onPress={() => router.push("/cadastro")}
         />
 
         <Button
-          title="Informações"
+          title="ℹ️ Informações"
           onPress={() => router.push("/info")}
         />
 
-      </SafeAreaView>
-    </ThemedView>
+      </View>
+
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20
+    padding: 20,
+    backgroundColor: "#f4f6f8"
   },
   title: {
     textAlign: "center",
-    marginVertical: 10
+    marginTop: 10
+  },
+  subtitle: {
+    textAlign: "center",
+    marginBottom: 15,
+    color: "gray"
+  },
+  buttons: {
+    marginTop: 20
   }
 });

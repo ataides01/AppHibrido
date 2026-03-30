@@ -1,33 +1,50 @@
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
-import React from 'react';
-import { useColorScheme } from 'react-native';
-
-import { Colors } from '@/constants/theme';
+import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function AppTabs() {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
-
   return (
-    <NativeTabs
-      backgroundColor={colors.background}
-      indicatorColor={colors.backgroundElement}
-      labelStyle={{ selected: { color: colors.text } }}>
-      <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/home.png')}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
+    <Tabs>
 
-      <NativeTabs.Trigger name="explore">
-        <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
-    </NativeTabs>
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="home" size={20} color={color} />
+          )
+        }}
+      />
+
+      <Tabs.Screen
+        name="vacinas"
+        options={{
+          title: "Vacinas",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="medkit" size={20} color={color} />
+          )
+        }}
+      />
+
+      <Tabs.Screen
+        name="cadastro"
+        options={{
+          title: "Funcionários",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="people" size={20} color={color} />
+          )
+        }}
+      />
+
+      <Tabs.Screen
+        name="info"
+        options={{
+          title: "Info",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="information-circle" size={20} color={color} />
+          )
+        }}
+      />
+
+    </Tabs>
   );
 }
