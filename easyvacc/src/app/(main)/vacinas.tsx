@@ -7,9 +7,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/shell/PageHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuth } from '@/context/auth-context';
@@ -91,9 +89,9 @@ export default function VacinasScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['left', 'right']}>
-      <ScreenHeader title="Vacinas" />
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+    <View style={styles.safe}>
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" style={styles.flex}>
+        <PageHeader title="Vacinas" subtitle="Busca, filtros e cadastro (admin)." />
         <TextInput
           value={q}
           onChangeText={setQ}
@@ -236,12 +234,13 @@ export default function VacinasScreen() {
           </ThemedView>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
+  flex: { flex: 1 },
   content: { padding: Spacing.four, gap: Spacing.three, paddingBottom: Spacing.six },
   search: {
     borderWidth: 1,

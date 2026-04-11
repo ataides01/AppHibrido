@@ -1,3 +1,5 @@
+import type { Posto } from '@/types/models';
+
 /** Distância em km entre dois pontos (fórmula de Haversine). */
 export function distanceKm(
   lat1: number,
@@ -30,4 +32,18 @@ export function mapsDirectionsUrl(
 
 export function mapsSearchUrl(lat: number, lng: number): string {
   return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+}
+
+export function findNearestPosto(
+  lat: number,
+  lng: number,
+  postos: Posto[]
+): { posto: Posto; km: number } | null {
+  if (postos.length === 0) return null;
+  let best: { posto: Posto; km: number } | null = null;
+  for (const p of postos) {
+    const km = distanceKm(lat, lng, p.lat, p.lng);
+    if (!best || km < best.km) best = { posto: p, km };
+  }
+  return best;
 }

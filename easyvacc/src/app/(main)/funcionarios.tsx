@@ -12,9 +12,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/shell/PageHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuth } from '@/context/auth-context';
@@ -145,9 +143,12 @@ export default function FuncionariosScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['left', 'right']}>
-      <ScreenHeader title="Gestão de equipe" />
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+    <View style={styles.safe}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        style={styles.flex}>
+        <PageHeader title="Gestão de equipe" subtitle="Criar contas e senhas provisórias." />
         <ThemedText themeColor="textSecondary">
           Cadastro local de profissionais (somente administrador). Opcionalmente crie login e senha
           provisória — o envio por e-mail é simulado na tela (sem servidor).
@@ -270,12 +271,13 @@ export default function FuncionariosScreen() {
           </ThemedView>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
+  flex: { flex: 1 },
   content: { padding: Spacing.four, gap: Spacing.three, paddingBottom: Spacing.six },
   form: { padding: Spacing.four, borderRadius: Spacing.three, gap: Spacing.two },
   input: {

@@ -1,19 +1,15 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/shell/PageHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
 
 export default function InfoScreen() {
-  const theme = useTheme();
-
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['left', 'right']}>
-      <ScreenHeader title="Sobre o EasyVacc" />
-      <ScrollView contentContainerStyle={styles.content}>
+    <View style={styles.safe}>
+      <ScrollView contentContainerStyle={styles.content} style={styles.flex}>
+        <PageHeader title="Sobre o EasyVacc" subtitle="FAQ e informações do projeto." />
         <ThemedView type="backgroundElement" style={styles.card}>
           <ThemedText type="smallBold">Persistência</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
@@ -34,8 +30,8 @@ export default function InfoScreen() {
         <ThemedView type="backgroundElement" style={styles.card}>
           <ThemedText type="smallBold">Integrações usadas</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            ViaCEP (endereço), Open-Meteo (clima em Saquarema, RJ), JSONPlaceholder (textos de exemplo),
-            mapa estático OpenStreetMap (prévia) e Google Maps ao abrir rota.
+            ViaCEP (endereço), Open-Meteo (clima em Saquarema, RJ), mapa estático OpenStreetMap (prévia) e
+            Google Maps ao abrir rota.
           </ThemedText>
         </ThemedView>
 
@@ -48,12 +44,13 @@ export default function InfoScreen() {
 
         <View style={{ height: Spacing.six }} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
+  flex: { flex: 1 },
   content: { padding: Spacing.four, gap: Spacing.three, paddingBottom: Spacing.six },
   card: { padding: Spacing.four, borderRadius: Spacing.three, gap: Spacing.two },
 });

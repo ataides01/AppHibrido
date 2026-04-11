@@ -11,9 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/shell/PageHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuth } from '@/context/auth-context';
@@ -21,20 +19,57 @@ import { useToast } from '@/context/toast-context';
 import { useThemePreference } from '@/context/theme-preference-context';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { fetchAddressByCep } from '@/services/viacep';
+import { findNearestPosto } from '@/lib/geo';
+import { geocodeFromViaCep } from '@/services/geocodeAddress';
+import { fetchAddressByCep, type ViaCepResponse } from '@/services/viacep';
+import type { Posto } from '@/types/models';
 import type { ThemePref } from '@/context/theme-preference-context';
 
 export default function PerfilScreen() {
   const theme = useTheme();
   const { pref, setPref } = useThemePreference();
-  const { user, updateProfile, logout, history, addHistory } = useAuth();
+  const { user, updateProfile, logout, history, addHistory, postos } = useAuth();
   const toast = useToast();
   const [cep, setCep] = useState(user?.cep ?? '');
   const [busyCep, setBusyCep] = useState(false);
+  const [nearest, setNearest] = useState<{ posto: Posto; km: number } | null>(null);
+  const [busyNearest, setBusyNearest] = useState(false);
 
   useEffect(() => {
     setCep(user?.cep ?? '');
   }, [user?.cep]);
+
+  useEffect(() => {
+    if (!user?.cidade || !user?.uf) {
+      setNearest(null);
+      setBusyNearest(false);
+      return;
+    }
+    const data: ViaCepResponse = {
+      cep: user.cep ?? '',
+      logradouro: user.logradouro ?? '',
+      bairro: user.bairro ?? '',
+      complemento: '',
+      localidade: user.cidade,
+      uf: user.uf,
+    };
+    let cancelled = false;
+    setBusyNearest(true);
+    (async () => {
+      const coords = await geocodeFromViaCep(data);
+      if (cancelled) return;
+      setBusyNearest(false);
+      if (!coords || postos.length === 0) {
+        setNearest(null);
+        return;
+      }
+      setNearest(findNearestPosto(coords.lat, coords.lng, postos));
+    })();
+    return () => {
+      cancelled = true;
+      setBusyNearest(false);
+    };
+  }, [user?.cidade, user?.uf, user?.logradouro, user?.bairro, user?.cep, postos]);
 
   async function pickAvatar(fromCamera: boolean) {
     const perm = fromCamera
@@ -63,6 +98,7 @@ export default function PerfilScreen() {
     setBusyCep(false);
     if (!data) {
       toast.show('CEP não encontrado.', 'error');
+      setNearest(null);
       return;
     }
     await updateProfile({
@@ -97,9 +133,9 @@ export default function PerfilScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['left', 'right']}>
-      <ScreenHeader title="Perfil" />
-      <ScrollView contentContainerStyle={styles.content}>
+    <View style={styles.safe}>
+      <ScrollView contentContainerStyle={styles.content} style={styles.flex}>
+        <PageHeader title="Perfil" subtitle="Conta, tema, endereço e histórico." />
         <View style={styles.avatarRow}>
           {user?.avatarUri ? (
             <Image source={{ uri: user.avatarUri }} style={styles.avatar} />
@@ -147,11 +183,37 @@ export default function PerfilScreen() {
               </ThemedText>
             </Pressable>
           </View>
-          {user?.logradouro ? (
+          {user?.logradouro || user?.cidade ? (
             <ThemedText type="small" themeColor="textSecondary" style={{ marginTop: Spacing.two }}>
-              {user.logradouro}
+              {user.logradouro || 'Endereço'}
               {user.bairro ? `, ${user.bairro}` : ''}
               {user.cidade ? ` — ${user.cidade}/${user.uf}` : ''}
+            </ThemedText>
+          ) : null}
+
+          {busyNearest ? (
+            <ThemedText type="small" themeColor="textSecondary" style={{ marginTop: Spacing.three }}>
+              Calculando posto mais próximo…
+            </ThemedText>
+          ) : nearest ? (
+            <ThemedView type="backgroundSelected" style={styles.nearestBox}>
+              <ThemedText type="smallBold">Posto de saúde mais próximo (estimativa)</ThemedText>
+              <ThemedText type="small" themeColor="textSecondary" style={styles.nearestHint}>
+                Com base no endereço do CEP no mapa — valor aproximado.
+              </ThemedText>
+              <ThemedText type="smallBold" style={{ marginTop: Spacing.two }}>
+                {nearest.posto.name}
+              </ThemedText>
+              <ThemedText type="small" themeColor="textSecondary">
+                {nearest.posto.address} — {nearest.posto.cidade}/{nearest.posto.uf}
+              </ThemedText>
+              <ThemedText type="small" themeColor="textSecondary" style={{ marginTop: Spacing.one }}>
+                ≈ {nearest.km.toFixed(1)} km do ponto estimado do seu endereço
+              </ThemedText>
+            </ThemedView>
+          ) : user?.cidade && postos.length > 0 ? (
+            <ThemedText type="small" themeColor="textSecondary" style={{ marginTop: Spacing.two }}>
+              Não foi possível estimar o posto mais próximo a partir deste CEP. Confira a aba Postos.
             </ThemedText>
           ) : null}
         </ThemedView>
@@ -197,12 +259,13 @@ export default function PerfilScreen() {
 
         <View style={{ height: Spacing.six }} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
+  flex: { flex: 1 },
   content: { padding: Spacing.four, gap: Spacing.three, paddingBottom: Spacing.six },
   avatarRow: { flexDirection: 'row', gap: Spacing.four, alignItems: 'center' },
   avatar: { width: 96, height: 96, borderRadius: 48 },
@@ -241,4 +304,11 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.three,
     paddingHorizontal: Spacing.two,
   },
+  nearestBox: {
+    marginTop: Spacing.three,
+    padding: Spacing.three,
+    borderRadius: Spacing.three,
+    gap: Spacing.one,
+  },
+  nearestHint: { marginTop: Spacing.one },
 });

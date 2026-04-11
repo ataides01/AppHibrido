@@ -9,9 +9,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { PageHeader } from '@/components/shell/PageHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuth } from '@/context/auth-context';
@@ -96,9 +94,9 @@ export default function PostosScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['left', 'right']}>
-      <ScreenHeader title="Postos de vacinação" />
-      <ScrollView contentContainerStyle={styles.content}>
+    <View style={styles.safe}>
+      <ScrollView contentContainerStyle={styles.content} style={styles.flex1}>
+        <PageHeader title="Postos de vacinação" subtitle="Distâncias, favoritos e rotas." />
         <ThemedText themeColor="textSecondary">
           Veja quais imunizações cada unidade oferece. A prévia do mapa é estática; o botão abre o
           trajeto no aplicativo de mapas.
@@ -182,7 +180,7 @@ export default function PostosScreen() {
 
         <View style={{ height: Spacing.six }} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
