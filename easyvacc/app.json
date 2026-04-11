@@ -21,7 +21,14 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "EasyVacc",
+      "shortName": "EasyVacc",
+      "lang": "pt-BR",
+      "scope": "/",
+      "themeColor": "#2E86DE",
+      "description": "Vacinas, postos de saúde e equipe — dados salvos localmente no aparelho.",
+      "backgroundColor": "#ffffff"
     },
     "plugins": [
       "expo-router",
@@ -33,6 +40,19 @@
             "image": "./assets/images/splash-icon.png",
             "imageWidth": 76
           }
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "O EasyVacc usa sua localização para ordenar os postos por distância."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O app acessa a galeria para a foto do perfil.",
+          "cameraPermission": "O app usa a câmera para a foto do perfil."
         }
       ]
     ],
