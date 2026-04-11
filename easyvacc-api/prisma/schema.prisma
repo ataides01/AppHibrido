@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String   @id @default(cuid())
+  email              String   @unique
+  passwordHash       String
+  name               String
+  role               String
+  mustChangePassword Boolean  @default(false)
+  avatarUri          String?
+  cep                String?
+  logradouro         String?
+  bairro             String?
+  cidade             String?
+  uf                 String?
+
+  employee   Employee?
+  favorites  FavoritePosto[]
+  history    HistoryEntry[]
+}
+
+model Employee {
+  id         String   @id @default(cuid())
+  name       String
+  cargo      String
+  cpf        String
+  phone      String
+  createdAt  DateTime @default(now())
+  userId     String?  @unique
+  loginEmail String?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Vaccine {
+  id           String @id
+  name         String
+  manufacturer String
+  doses        String
+  category     String
+  status       String
+
+  postos PostoVaccine[]
+}
+
+model Posto {
+  id      String @id
+  name    String
+  address String
+  cidade  String
+  uf      String
+  lat     Float
+  lng     Float
+
+  vaccines  PostoVaccine[]
+  favorites FavoritePosto[]
+}
+
+model PostoVaccine {
+  postoId   String
+  vaccineId String
+  posto     Posto   @relation(fields: [postoId], references: [id], onDelete: Cascade)
+  vaccine   Vaccine @relation(fields: [vaccineId], references: [id], onDelete: Cascade)
+
+  @@id([postoId, vaccineId])
+}
+
+model FavoritePosto {
+  userId  String
+  postoId String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posto   Posto  @relation(fields: [postoId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postoId])
+}
+
+model HistoryEntry {
+  id     String   @id @default(cuid())
+  userId String
+  label  String
+  at     DateTime @default(now())
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, at])
+}
