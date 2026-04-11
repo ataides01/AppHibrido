@@ -1,4 +1,4 @@
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -6,13 +6,14 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  TextInput,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AuthScreenLayout } from '@/components/auth/auth-screen-layout';
+import { AuthTextField } from '@/components/auth/auth-text-field';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/context/toast-context';
 import { Spacing } from '@/constants/theme';
@@ -20,6 +21,7 @@ import { useTheme } from '@/hooks/use-theme';
 
 export default function RegisterScreen() {
   const theme = useTheme();
+  const { height } = useWindowDimensions();
   const { register } = useAuth();
   const toast = useToast();
   const [name, setName] = useState('');
@@ -47,70 +49,72 @@ export default function RegisterScreen() {
     router.replace('/home');
   }
 
+  const pageBg = theme.background === '#000000' ? '#0a0a0a' : '#E8ECEF';
+
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: pageBg }]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.flex}>
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          <ThemedText type="subtitle" style={styles.title}>
-            Criar conta
-          </ThemedText>
-          <ThemedText themeColor="textSecondary" style={styles.lead}>
-            Pacientes podem se cadastrar para favoritar postos e manter histórico local.
-          </ThemedText>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={[
+            styles.scroll,
+            { minHeight: Math.max(height * 0.92, 560) },
+          ]}>
+          <AuthScreenLayout
+            sideTitle="Já faz parte?"
+            sideDescription="Se você já tem conta, volte para a tela de login e continue de onde parou."
+            sideCtaLabel="ENTRAR"
+            href="/login">
+            <ThemedText type="subtitle" style={styles.formTitle}>
+              Criar conta
+            </ThemedText>
+            <ThemedText themeColor="textSecondary" style={styles.formLead}>
+              Cadastro para pacientes: favoritos e histórico acompanham sua conta.
+            </ThemedText>
 
-          <ThemedView type="backgroundElement" style={styles.card}>
-            <ThemedText type="smallBold">Nome</ThemedText>
-            <TextInput
-              value={name}
-              onChangeText={setName}
-              placeholder="Nome completo"
-              placeholderTextColor={theme.textSecondary}
-              style={[styles.input, { color: theme.text, borderColor: theme.backgroundSelected }]}
-            />
-            <ThemedText type="smallBold" style={styles.mt}>
-              E-mail
-            </ThemedText>
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              placeholder="seu@email.com"
-              placeholderTextColor={theme.textSecondary}
-              style={[styles.input, { color: theme.text, borderColor: theme.backgroundSelected }]}
-            />
-            <ThemedText type="smallBold" style={styles.mt}>
-              Senha
-            </ThemedText>
-            <TextInput
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              placeholder="Mínimo 4 caracteres"
-              placeholderTextColor={theme.textSecondary}
-              style={[styles.input, { color: theme.text, borderColor: theme.backgroundSelected }]}
-            />
+            <View style={styles.fieldBlock}>
+              <ThemedText type="smallBold">Nome</ThemedText>
+              <AuthTextField
+                icon="person-outline"
+                value={name}
+                onChangeText={setName}
+                placeholder="Nome completo"
+              />
+            </View>
+            <View style={styles.fieldBlock}>
+              <ThemedText type="smallBold">E-mail</ThemedText>
+              <AuthTextField
+                icon="mail-outline"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                placeholder="seu@email.com"
+              />
+            </View>
+            <View style={styles.fieldBlock}>
+              <ThemedText type="smallBold">Senha</ThemedText>
+              <AuthTextField
+                icon="lock-closed-outline"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                placeholder="Mínimo 4 caracteres"
+              />
+            </View>
+
             <Pressable
               onPress={onSubmit}
               disabled={busy}
               style={({ pressed }) => [
                 styles.primary,
-                { opacity: busy ? 0.6 : pressed ? 0.85 : 1 },
+                { backgroundColor: '#2A9D8F', opacity: busy ? 0.6 : pressed ? 0.9 : 1 },
               ]}>
-              <ThemedText style={styles.primaryLabel}>{busy ? 'Salvando…' : 'Cadastrar'}</ThemedText>
+              <ThemedText style={styles.primaryLabel}>{busy ? 'Salvando…' : 'CADASTRAR'}</ThemedText>
             </Pressable>
-          </ThemedView>
-
-          <View style={styles.row}>
-            <ThemedText type="small" themeColor="textSecondary">
-              Já tem conta?{' '}
-            </ThemedText>
-            <Link href="/login">
-              <ThemedText type="linkPrimary">Entrar</ThemedText>
-            </Link>
-          </View>
+          </AuthScreenLayout>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -121,32 +125,22 @@ const styles = StyleSheet.create({
   safe: { flex: 1 },
   flex: { flex: 1 },
   scroll: {
-    padding: Spacing.four,
-    paddingTop: Spacing.six,
-    gap: Spacing.three,
-  },
-  title: { textAlign: 'center' },
-  lead: { textAlign: 'center' },
-  card: {
-    borderRadius: Spacing.three,
-    padding: Spacing.four,
-    gap: Spacing.two,
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: Spacing.two,
+    flexGrow: 1,
+    justifyContent: 'center',
     paddingHorizontal: Spacing.three,
-    paddingVertical: Platform.OS === 'web' ? 12 : 10,
-    marginTop: Spacing.one,
+    paddingVertical: Spacing.four,
   },
-  mt: { marginTop: Spacing.two },
+  formTitle: { fontSize: 22, letterSpacing: -0.3 },
+  formLead: { marginBottom: Spacing.two, fontSize: 14, lineHeight: 20 },
+  fieldBlock: { gap: Spacing.one, maxWidth: 400, width: '100%', alignSelf: 'center' },
   primary: {
-    backgroundColor: '#2E86DE',
-    borderRadius: Spacing.three,
-    paddingVertical: Spacing.three,
+    borderRadius: 999,
+    paddingVertical: 14,
     alignItems: 'center',
-    marginTop: Spacing.three,
+    marginTop: Spacing.two,
+    maxWidth: 400,
+    width: '100%',
+    alignSelf: 'center',
   },
-  primaryLabel: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  row: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' },
+  primaryLabel: { color: '#fff', fontWeight: '800', fontSize: 14, letterSpacing: 1 },
 });

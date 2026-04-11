@@ -61,3 +61,21 @@ export interface HistoryEntry {
   label: string;
   at: string;
 }
+
+/** Dose registrada na carteira (demonstração local). */
+export interface CarteiraDose {
+  vaccineId: string;
+  appliedAt: string;
+  lote?: string;
+}
+
+/** Registro de aplicação feito pelo admin (demonstração). */
+export interface VaccineApplicationRecord {
+  id: string;
+  vaccineId: string;
+  vaccineName: string;
+  patientUserId: string | null;
+  patientName: string;
+  appliedAt: string;
+  lote?: string;
+}

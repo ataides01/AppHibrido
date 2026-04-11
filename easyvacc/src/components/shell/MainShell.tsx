@@ -24,6 +24,7 @@ const MENU: NavItem[] = [
   { href: '/home', label: 'Dashboard', icon: 'grid-outline' },
   { href: '/vacinas', label: 'Vacinas', icon: 'medkit-outline' },
   { href: '/postos', label: 'Postos de saúde', icon: 'location-outline' },
+  { href: '/aplicacoes', label: 'Aplicações', icon: 'bandage-outline', adminOnly: true },
   { href: '/funcionarios', label: 'Gestão da equipe', icon: 'briefcase-outline', adminOnly: true },
   { href: '/perfil', label: 'Perfil', icon: 'person-outline' },
   { href: '/info', label: 'Sobre / FAQ', icon: 'help-circle-outline' },
@@ -60,6 +61,12 @@ function SidebarNav({
           const active =
             pathname === item.href ||
             (item.href !== '/home' && pathname.startsWith(item.href));
+          const label =
+            item.href === '/vacinas' && !isAdmin ? 'Carteira' : item.label;
+          const icon =
+            item.href === '/vacinas' && !isAdmin
+              ? ('albums-outline' as const)
+              : item.icon;
           return (
             <Pressable
               key={item.href}
@@ -69,8 +76,8 @@ function SidebarNav({
                 active && styles.navItemActive,
                 pressed && { opacity: 0.88 },
               ]}>
-              <Ionicons name={item.icon} size={20} color={active ? SHELL_BLUE : 'rgba(255,255,255,0.92)'} />
-              <Text style={[styles.navText, active && styles.navTextActive]}>{item.label}</Text>
+              <Ionicons name={icon} size={20} color={active ? SHELL_BLUE : 'rgba(255,255,255,0.92)'} />
+              <Text style={[styles.navText, active && styles.navTextActive]}>{label}</Text>
             </Pressable>
           );
         })}

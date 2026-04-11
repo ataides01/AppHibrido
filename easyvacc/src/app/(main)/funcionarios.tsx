@@ -17,7 +17,6 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/context/toast-context';
-import { createId } from '@/lib/id';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import type { Employee } from '@/types/models';
@@ -44,10 +43,11 @@ export default function FuncionariosScreen() {
   const {
     isAdmin,
     employees,
-    saveEmployees,
+    addEmployeeSolo,
     addHistory,
     createEmployeeWithLogin,
     removeEmployee,
+    apiMode,
   } = useAuth();
   const toast = useToast();
   const [name, setName] = useState('');
@@ -100,25 +100,29 @@ export default function FuncionariosScreen() {
       return;
     }
 
-    const e: Employee = {
-      id: createId(),
+    const r = await addEmployeeSolo({
       name: name.trim(),
       cargo: cargo.trim(),
-      cpf: cpf.trim() || '—',
-      phone: phone.trim() || '—',
-      createdAt: new Date().toISOString(),
-    };
-    saveEmployees([e, ...employees]);
+      cpf,
+      phone,
+    });
+    if (!r.ok) {
+      toast.show(r.error ?? 'Não foi possível salvar.', 'error');
+      return;
+    }
     setName('');
     setCargo('');
     setCpf('');
     setPhone('');
     toast.show('Profissional cadastrado.', 'success');
-    addHistory(`Cadastrou funcionário ${e.name}`);
+    addHistory(`Cadastrou funcionário ${name.trim()}`);
   }
 
   function removeEmp(e: Employee) {
-    Alert.alert('Remover', `Excluir ${e.name} da lista local?${e.userId ? ' A conta de login também será removida.' : ''}`, [
+    Alert.alert(
+      'Remover',
+      `Excluir ${e.name}?${e.userId ? ' A conta de login também será removida.' : ''}${apiMode ? '' : ' (lista neste aparelho.)'}`,
+      [
       { text: 'Cancelar', style: 'cancel' },
       {
         text: 'Excluir',
@@ -150,8 +154,9 @@ export default function FuncionariosScreen() {
         style={styles.flex}>
         <PageHeader title="Gestão de equipe" subtitle="Criar contas e senhas provisórias." />
         <ThemedText themeColor="textSecondary">
-          Cadastro local de profissionais (somente administrador). Opcionalmente crie login e senha
-          provisória — o envio por e-mail é simulado na tela (sem servidor).
+          {apiMode
+            ? 'Profissionais e contas ficam no servidor (easyvacc-api). Opcionalmente crie login e senha provisória — o envio por e-mail continua simulado na tela.'
+            : 'Cadastro local de profissionais (somente administrador). Opcionalmente crie login e senha provisória — o envio por e-mail é simulado na tela (sem servidor).'}
         </ThemedText>
 
         <ThemedView type="backgroundElement" style={styles.form}>

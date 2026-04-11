@@ -1,5 +1,5 @@
 import { useFocusEffect } from '@react-navigation/native';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -7,11 +7,13 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  TextInput,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AuthScreenLayout } from '@/components/auth/auth-screen-layout';
+import { AuthTextField } from '@/components/auth/auth-text-field';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuth } from '@/context/auth-context';
@@ -21,6 +23,7 @@ import { useTheme } from '@/hooks/use-theme';
 
 export default function LoginScreen() {
   const theme = useTheme();
+  const { height } = useWindowDimensions();
   const { login } = useAuth();
   const toast = useToast();
   const [email, setEmail] = useState('');
@@ -52,66 +55,69 @@ export default function LoginScreen() {
     router.replace('/home');
   }
 
+  const pageBg = theme.background === '#000000' ? '#0a0a0a' : '#E8ECEF';
+
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: pageBg }]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.flex}>
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          <ThemedText type="subtitle" style={styles.brand}>
-            EasyVacc
-          </ThemedText>
-          <ThemedText themeColor="textSecondary" style={styles.lead}>
-            Entre para consultar postos, vacinas e sua carteira local.
-          </ThemedText>
-
-          <ThemedView type="backgroundElement" style={styles.card}>
-            <ThemedText type="smallBold">E-mail</ThemedText>
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              placeholder="seu@email.com"
-              placeholderTextColor={theme.textSecondary}
-              style={[styles.input, { color: theme.text, borderColor: theme.backgroundSelected }]}
-            />
-            <ThemedText type="smallBold" style={styles.mt}>
-              Senha
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={[
+            styles.scroll,
+            { minHeight: Math.max(height * 0.92, 520) },
+          ]}>
+          <AuthScreenLayout
+            sideTitle="Bem-vindo de volta!"
+            sideDescription="Para acompanhar postos, vacinas e sua carteira, entre com seu e-mail e senha."
+            sideCtaLabel="CRIAR CONTA"
+            href="/register">
+            <ThemedText type="subtitle" style={styles.formTitle}>
+              Entrar
             </ThemedText>
-            <TextInput
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              placeholder="••••••••"
-              placeholderTextColor={theme.textSecondary}
-              style={[styles.input, { color: theme.text, borderColor: theme.backgroundSelected }]}
-            />
+            <ThemedText themeColor="textSecondary" style={styles.formLead}>
+              Use seu e-mail para acessar sua conta.
+            </ThemedText>
+
+            <View style={styles.fieldBlock}>
+              <ThemedText type="smallBold">E-mail</ThemedText>
+              <AuthTextField
+                icon="mail-outline"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                placeholder="seu@email.com"
+              />
+            </View>
+            <View style={styles.fieldBlock}>
+              <ThemedText type="smallBold">Senha</ThemedText>
+              <AuthTextField
+                icon="lock-closed-outline"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                placeholder="••••••••"
+              />
+            </View>
+
             <Pressable
               onPress={onSubmit}
               disabled={busy}
               style={({ pressed }) => [
                 styles.primary,
-                { opacity: busy ? 0.6 : pressed ? 0.85 : 1 },
+                { backgroundColor: '#2A9D8F', opacity: busy ? 0.6 : pressed ? 0.9 : 1 },
               ]}>
-              <ThemedText style={styles.primaryLabel}>{busy ? 'Entrando…' : 'Entrar'}</ThemedText>
+              <ThemedText style={styles.primaryLabel}>{busy ? 'Entrando…' : 'ENTRAR'}</ThemedText>
             </Pressable>
-          </ThemedView>
 
-          <View style={styles.row}>
-            <ThemedText type="small" themeColor="textSecondary">
-              Não tem conta?{' '}
-            </ThemedText>
-            <Link href="/register">
-              <ThemedText type="linkPrimary">Cadastre-se</ThemedText>
-            </Link>
-          </View>
-
-          <ThemedView type="backgroundSelected" style={styles.hint}>
-            <ThemedText type="small" themeColor="textSecondary">
-              Demo: admin@easyvacc.br / admin123 · paciente@easyvacc.br / 123456
-            </ThemedText>
-          </ThemedView>
+            <ThemedView type="backgroundSelected" style={styles.hint}>
+              <ThemedText type="small" themeColor="textSecondary" style={styles.hintText}>
+                Demo: admin@easyvacc.br / admin123 · paciente@easyvacc.br / 123456
+              </ThemedText>
+            </ThemedView>
+          </AuthScreenLayout>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -122,33 +128,31 @@ const styles = StyleSheet.create({
   safe: { flex: 1 },
   flex: { flex: 1 },
   scroll: {
-    padding: Spacing.four,
-    paddingTop: Spacing.six,
-    gap: Spacing.three,
-  },
-  brand: { textAlign: 'center' },
-  lead: { textAlign: 'center', marginBottom: Spacing.two },
-  card: {
-    borderRadius: Spacing.three,
-    padding: Spacing.four,
-    gap: Spacing.two,
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: Spacing.two,
+    flexGrow: 1,
+    justifyContent: 'center',
     paddingHorizontal: Spacing.three,
-    paddingVertical: Platform.OS === 'web' ? 12 : 10,
-    marginTop: Spacing.one,
+    paddingVertical: Spacing.four,
   },
-  mt: { marginTop: Spacing.two },
+  formTitle: { fontSize: 22, letterSpacing: -0.3 },
+  formLead: { marginBottom: Spacing.two, fontSize: 14, lineHeight: 20 },
+  fieldBlock: { gap: Spacing.one, maxWidth: 400, width: '100%', alignSelf: 'center' },
   primary: {
-    backgroundColor: '#27AE60',
-    borderRadius: Spacing.three,
-    paddingVertical: Spacing.three,
+    borderRadius: 999,
+    paddingVertical: 14,
     alignItems: 'center',
-    marginTop: Spacing.three,
+    marginTop: Spacing.two,
+    maxWidth: 400,
+    width: '100%',
+    alignSelf: 'center',
   },
-  primaryLabel: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  row: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' },
-  hint: { padding: Spacing.three, borderRadius: Spacing.three },
+  primaryLabel: { color: '#fff', fontWeight: '800', fontSize: 14, letterSpacing: 1 },
+  hint: {
+    padding: Spacing.three,
+    borderRadius: Spacing.three,
+    marginTop: Spacing.two,
+    maxWidth: 400,
+    width: '100%',
+    alignSelf: 'center',
+  },
+  hintText: { textAlign: 'center', fontSize: 12 },
 });
