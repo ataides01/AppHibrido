@@ -1,0 +1,119 @@
+================================================================================
+  EasyVacc — O que instalar em outro computador para rodar o projeto
+================================================================================
+
+Pasta do projeto (app): .../AppHibrido/easyvacc
+(É nesta pasta que estão package.json, src/, app/, etc.)
+
+--------------------------------------------------------------------------------
+1) OBRIGATÓRIO (mínimo para desenvolvimento)
+--------------------------------------------------------------------------------
+
+  • Node.js
+    - Instale a versão LTS atual (recomendado: Node 20 ou 22).
+    - Download: https://nodejs.org/
+    - O instalador já inclui o npm.
+
+  • Verificar no terminal / PowerShell:
+      node -v
+      npm -v
+
+  • Copiar o projeto para o outro PC
+    - Pendrive, OneDrive, zip, ou Git (clone do repositório).
+    - Se usar zip: extraia mantendo a estrutura de pastas.
+
+  • Instalar dependências do Node (na pasta easyvacc):
+      cd caminho\para\AppHibrido\easyvacc
+      npm install
+
+  • Subir o servidor de desenvolvimento:
+      npx expo start
+    Ou:
+      npm start
+
+  • Abrir no navegador (PWA / web), no terminal do Expo pressione a tecla indicada
+    para "web" ou execute:
+      npx expo start --web
+
+Observação: este projeto usa Expo SDK 55 (canary) + React Native 0.83. Se algo
+falhar, confira se o Node está atualizado e se rodou npm install na pasta certa.
+
+--------------------------------------------------------------------------------
+2) RECOMENDADO (editor e Git)
+--------------------------------------------------------------------------------
+
+  • Editor de código
+    - Visual Studio Code (ou Cursor): https://code.visualstudio.com/
+
+  • Git (opcional, se for clonar/atualizar por repositório)
+    - https://git-scm.com/
+
+--------------------------------------------------------------------------------
+3) PARA TESTAR NO CELULAR (Expo Go)
+--------------------------------------------------------------------------------
+
+  • Instale o app "Expo Go" na loja (Android / iOS).
+
+  • Com o PC e o celular na mesma rede Wi‑Fi, rode npx expo start e escaneie o
+    QR code que aparece no terminal ou na página que o Expo abre.
+
+  • Alguns recursos podem precisar de build nativo; para só desenvolver, Expo Go
+    costuma bastar para a maior parte do fluxo.
+
+--------------------------------------------------------------------------------
+4) PARA EMULADOR ANDROID (Windows / Linux / macOS)
+--------------------------------------------------------------------------------
+
+  • Android Studio
+    - https://developer.android.com/studio
+    - Instale o Android SDK, uma imagem de sistema (AVD) e configure um emulador.
+
+  • Variável de ambiente ANDROID_HOME (Android SDK path), conforme a documentação
+    do Android Studio / Expo:
+    - https://docs.expo.dev/workflow/android-studio-emulator/
+
+  • Com o emulador aberto:
+      npx expo start
+    Depois pressione a opção para abrir no Android.
+
+--------------------------------------------------------------------------------
+5) PARA SIMULADOR iOS (SOMENTE macOS)
+--------------------------------------------------------------------------------
+
+  • Xcode (App Store da Apple).
+
+  • Xcode Command Line Tools e, se necessário, CocoaPods para dependências nativas.
+
+  • Documentação Expo:
+    - https://docs.expo.dev/workflow/ios-simulator/
+
+--------------------------------------------------------------------------------
+6) RESUMO RÁPIDO (outro PC Windows, só web)
+--------------------------------------------------------------------------------
+
+  1. Instalar Node.js LTS.
+  2. Copiar a pasta easyvacc inteira.
+  3. Abrir PowerShell na pasta easyvacc.
+  4. npm install
+  5. npx expo start --web
+
+--------------------------------------------------------------------------------
+7) PROBLEMAS COMUNS
+--------------------------------------------------------------------------------
+
+  • "npm não é reconhecido" → Node não instalado ou terminal precisa ser fechado
+    e aberto de novo após instalar o Node.
+
+  • Erros ao instalar pacotes → apagar a pasta node_modules e o arquivo
+    package-lock.json (se existir), depois npm install de novo.
+
+  • Firewall bloqueando → permitir Node/Expo na rede local para o celular
+    enxergar o bundler.
+
+  • Caminhos com caracteres especiais (ex.: "Área de Trabalho") → em geral
+    funciona; se houver erro estranho, tente copiar o projeto para um caminho
+    simples, por exemplo C:\dev\easyvacc.
+
+================================================================================
+  Fim do guia — EasyVacc (Expo / React Native)
+================================================================================
