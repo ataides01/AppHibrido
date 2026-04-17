@@ -32,6 +32,13 @@ const createEmployeeBody = z.object({
   email: z.string().email(),
 });
 
+const createEmployeeSoloBody = z.object({
+  name: z.string().min(1),
+  cargo: z.string(),
+  cpf: z.string(),
+  phone: z.string(),
+});
+
 function requireAdmin(request: { user: { role: string } }, reply: { status: (n: number) => { send: (b: unknown) => unknown } }) {
   if (request.user.role !== 'admin') {
     reply.status(403).send({ error: 'Acesso restrito a administradores.' });
@@ -154,6 +161,25 @@ export const catalogRoutes: FastifyPluginAsync = async (app) => {
     if (!requireAdmin(request, reply)) return;
     const list = await prisma.employee.findMany({ orderBy: { createdAt: 'desc' } });
     return reply.send({ employees: list.map(employeeToDto) });
+  });
+
+  /** Funcionário sem conta de login (só cadastro de equipe). */
+  app.post('/employees', { onRequest: [app.authenticate] }, async (request, reply) => {
+    if (!requireAdmin(request, reply)) return;
+    const parsed = createEmployeeSoloBody.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({ error: 'Dados do funcionário inválidos.' });
+    }
+    const { name, cargo, cpf, phone } = parsed.data;
+    const e = await prisma.employee.create({
+      data: {
+        name: name.trim(),
+        cargo: cargo.trim(),
+        cpf: cpf.trim() || '—',
+        phone: phone.trim() || '—',
+      },
+    });
+    return reply.status(201).send({ employee: employeeToDto(e) });
   });
 
   app.post('/employees/with-login', { onRequest: [app.authenticate] }, async (request, reply) => {
