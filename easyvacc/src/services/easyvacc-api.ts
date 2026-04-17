@@ -75,11 +75,18 @@ async function request<T>(
     headers.set('Content-Type', 'application/json');
   }
 
-  const res = await fetch(`${base}/api${path}`, {
-    ...init,
-    headers,
-    body,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${base}/api${path}`, {
+      ...init,
+      headers,
+      body,
+    });
+  } catch {
+    throw new Error(
+      `Não foi possível conectar na API em ${base}. Verifique se a easyvacc-api está rodando e, no celular, use o IP da máquina em EXPO_PUBLIC_API_URL (não 127.0.0.1).`
+    );
+  }
 
   const text = await res.text();
   let data: unknown = null;
