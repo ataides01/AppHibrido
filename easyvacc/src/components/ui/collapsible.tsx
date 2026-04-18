@@ -1,4 +1,4 @@
-import { SymbolView } from 'expo-symbols';
+import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import { PropsWithChildren, useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -19,7 +19,13 @@ export function Collapsible({ children, title }: PropsWithChildren & { title: st
         onPress={() => setIsOpen((value) => !value)}>
         <ThemedView type="backgroundElement" style={styles.button}>
           <SymbolView
-            name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' }}
+            name={
+              {
+                ios: 'chevron.right',
+                android: 'chevron_right',
+                web: 'chevron_right',
+              } as unknown as SymbolViewProps['name']
+            }
             size={14}
             weight="bold"
             tintColor={theme.text}
